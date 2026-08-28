@@ -478,27 +478,27 @@ document.getElementById('f-email').addEventListener('keydown', function(e){ if(e
 // CARGA RESERVAS EXISTENTES DESDE EL SHEET AL INICIAR
 // ============================================================
 function cargarReservas() {
-  fetch(APPS_SCRIPT_URL + '?action=getReservas', {
+  var url = APPS_SCRIPT_URL + '?action=getReservas';
+  fetch(url, {
     method: 'GET',
-    mode: 'no-cors'
-  }).catch(function() {});
-  // Como no-cors no permite leer la respuesta, usamos un iframe oculto
-  var iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.src = APPS_SCRIPT_URL + '?action=getReservas';
-  document.body.appendChild(iframe);
-  iframe.onload = function() {
-    try {
-      var data = JSON.parse(iframe.contentDocument.body.innerText);
-      if (data && data.reservas) {
-        data.reservas.forEach(function(r) {
-          bookings[r.key] = { empresa: 'RESERVADO', patente: '', orden: '', code: r.code };
-        });
-        render();
-      }
-    } catch(e) {}
-    document.body.removeChild(iframe);
-  };
+    redirect: 'follow'
+  })
+  .then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    if (data && data.reservas) {
+      data.reservas.forEach(function(r) {
+        bookings[r.key] = { empresa: 'RESERVADO', patente: '', orden: '', code: r.code };
+      });
+      render();
+      console.log('Reservas cargadas:', data.reservas.length);
+    }
+  })
+  .catch(function(err) {
+    console.warn('getReservas error:', err);
+  });
 }
 
 // ============================================================
