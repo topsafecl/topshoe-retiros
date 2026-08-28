@@ -492,14 +492,14 @@ function cargarReservas() {
       data.reservas.forEach(function(r) {
         bookings[r.key] = { empresa: 'RESERVADO', patente: '', orden: '', code: r.code };
       });
-      render();
-      console.log('Reservas cargadas:', data.reservas.length);
     }
+    render();
+    console.log('Reservas cargadas:', data && data.reservas ? data.reservas.length : 0);
   })
   .catch(function(err) {
     console.warn('getReservas error:', err);
+    render();
   });
-}
 
 // ============================================================
 // VALIDACION RUT CHILENO
@@ -540,7 +540,6 @@ function validarRut(rut) {
 }
 
 
-render();
 cargarReservas();
 </script>
 </body>
